@@ -51,6 +51,21 @@ class Lexer {
         return Token.identifier(source.substring(start, position));
       }
 
+      if (char == '"') {
+        position++;
+        int start = position;
+        while (position < source.length && source[position] != '"') {
+          if (source[position] == '\\') {
+            position++;
+          }
+          position++;
+        }
+        if (position < source.length) {
+          position++; // Skip the closing quote
+        }
+        return Token.string(source.substring(start, position - 1));
+      }
+
       switch (char) {
         case '(':
           position++;

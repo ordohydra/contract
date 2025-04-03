@@ -1,6 +1,7 @@
 enum TokenType {
   identifier,
   number,
+  string,
   operator,
   lparen,
   rparen,
@@ -27,6 +28,7 @@ class Token {
   //static const operator = Token(TokenType.operator);
 
   factory Token.identifier(String value) => Token(TokenType.identifier, value);
+  factory Token.string(String value) => Token(TokenType.string, value);
   factory Token.number(num value) => Token(TokenType.number, value);
   factory Token.operator(String value) => Token(TokenType.operator, value);
 }
