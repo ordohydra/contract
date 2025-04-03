@@ -90,7 +90,8 @@ class Lexer {
         case '*':
         case '/':
         case '%':
-        case '**':
+        case '<':
+        case '>':
           position++;
           return Token.operator(char);
         default:

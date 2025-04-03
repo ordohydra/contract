@@ -137,5 +137,24 @@ void main() {
       expect(tokens[0].type, TokenType.string);
       expect(tokens[0].value, 'hello world');
     });
+
+    test('Lexer should handle function output operator correclytly', () {
+      final String input = 'func someFunctionName() -> OutputType';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+      expect(tokens.length, 7);
+      expect(tokens[0].type, TokenType.identifier);
+      expect(tokens[0].value, 'func');
+      expect(tokens[1].type, TokenType.identifier);
+      expect(tokens[1].value, 'someFunctionName');
+      expect(tokens[2].type, TokenType.lparen);
+      expect(tokens[3].type, TokenType.rparen);
+      expect(tokens[4].type, TokenType.operator);
+      expect(tokens[4].value, '-');
+      expect(tokens[5].type, TokenType.operator);
+      expect(tokens[5].value, '>');
+      expect(tokens[6].type, TokenType.identifier);
+      expect(tokens[6].value, 'OutputType');
+    });
   });
 }
