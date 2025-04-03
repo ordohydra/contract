@@ -43,10 +43,9 @@ class Lexer {
         );
       }
 
-      if (isLetter(char) || char == '_') {
+      if (isLetter(char)) {
         int start = position;
-        while (position < source.length &&
-            (isLetter(source[position]) || source[position] == '_')) {
+        while (position < source.length && isLetter(source[position])) {
           position++;
         }
         return Token.identifier(source.substring(start, position));
@@ -86,5 +85,19 @@ class Lexer {
       }
     }
     return Token.eof;
+  }
+
+  List<Token> tokenize() {
+    final List<Token> tokens = [];
+    Token token;
+
+    do {
+      token = nextToken();
+      if (token.type != TokenType.eof) {
+        tokens.add(token);
+      }
+    } while (token.type != TokenType.eof);
+
+    return tokens;
   }
 }
