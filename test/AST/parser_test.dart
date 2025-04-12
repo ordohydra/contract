@@ -35,5 +35,15 @@ void main() {
       expect(nodes.length, 1);
       expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
     });
+    test('Parser should handle function declaration with arguments', () {
+      final String input = 'func myFunc(arg1: int, arg2: string) { }';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+      final ASTParser parser = ASTParser(tokens);
+      final nodes = parser.parse();
+
+      expect(nodes.length, 1);
+      expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
+    });
   });
 }

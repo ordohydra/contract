@@ -9,6 +9,7 @@ enum TokenType {
   rbrace,
   colon,
   assign,
+  comma,
   eof,
 }
 
@@ -25,7 +26,7 @@ class Token {
   static const rbrace = Token(TokenType.rbrace);
   static const colon = Token(TokenType.colon);
   static const assign = Token(TokenType.assign);
-  //static const operator = Token(TokenType.operator);
+  static const comma = Token(TokenType.comma);
 
   factory Token.identifier(String value) => Token(TokenType.identifier, value);
   factory Token.string(String value) => Token(TokenType.string, value);

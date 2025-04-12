@@ -10,3 +10,7 @@ bool isWhitespace(String value) {
 bool isLetter(String value) {
   return RegExp(r'^[a-zA-Z]$').hasMatch(value);
 }
+
+bool isAlphanumeric(String value) {
+  return RegExp(r'^[a-zA-Z0-9]$').hasMatch(value);
+}

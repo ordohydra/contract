@@ -43,9 +43,9 @@ class Lexer {
         );
       }
 
-      if (isLetter(char)) {
+      if (isAlphanumeric(char)) {
         int start = position;
-        while (position < source.length && isLetter(source[position])) {
+        while (position < source.length && isAlphanumeric(source[position])) {
           position++;
         }
         return Token.identifier(source.substring(start, position));
@@ -85,6 +85,9 @@ class Lexer {
         case '=':
           position++;
           return Token.assign;
+        case ',':
+          position++;
+          return Token.comma;
         case '+':
         case '-':
         case '*':

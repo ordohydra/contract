@@ -43,4 +43,15 @@ void main() {
     expect(isLetter('1'), isFalse);
     expect(isLetter(' '), isFalse);
   });
+
+  test('Test isAlphanumeric', () {
+    expect(isAlphanumeric('a'), isTrue);
+    expect(isAlphanumeric('b'), isTrue);
+    expect(isAlphanumeric('c'), isTrue);
+    expect(isAlphanumeric('A'), isTrue);
+    expect(isAlphanumeric('B'), isTrue);
+    expect(isAlphanumeric('C'), isTrue);
+    expect(isAlphanumeric('1'), isTrue);
+    expect(isAlphanumeric(' '), isFalse);
+  });
 }

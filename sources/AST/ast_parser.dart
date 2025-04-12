@@ -55,6 +55,27 @@ class ASTParser {
 
     // Check for parentheses
     expect(TokenType.lparen);
+    // Check for named arguments
+    while (currentToken.type != TokenType.rparen) {
+      if (currentToken.type != TokenType.identifier) {
+        throw Exception('Expected argument name');
+      }
+      consume('argument name');
+      if (currentToken.type != TokenType.colon) {
+        throw Exception('Expected ":" after argument name');
+      }
+      consume('colon');
+      if (currentToken.type != TokenType.identifier) {
+        throw Exception('Expected argument type');
+      }
+      consume('argument type');
+      if (currentToken.type == TokenType.comma) {
+        consume('comma');
+      } else {
+        break;
+      }
+    }
+
     expect(TokenType.rparen);
 
     String? returnType;

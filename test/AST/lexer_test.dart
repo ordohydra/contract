@@ -156,5 +156,46 @@ void main() {
       expect(tokens[6].type, TokenType.identifier);
       expect(tokens[6].value, 'OutputType');
     });
+
+    test('Lexer should handle function declaration with arguments', () {
+      final String input = 'func myFunc(x: int, y: string) { }';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+
+      expect(tokens.length, 13);
+      expect(tokens[0].type, TokenType.identifier);
+      expect(tokens[0].value, 'func');
+      expect(tokens[1].type, TokenType.identifier);
+      expect(tokens[1].value, 'myFunc');
+      expect(tokens[2].type, TokenType.lparen);
+      expect(tokens[3].type, TokenType.identifier);
+      expect(tokens[3].value, 'x');
+      expect(tokens[4].type, TokenType.colon);
+      expect(tokens[5].type, TokenType.identifier);
+      expect(tokens[5].value, 'int');
+      expect(tokens[6].type, TokenType.comma);
+      expect(tokens[7].type, TokenType.identifier);
+      expect(tokens[7].value, 'y');
+      expect(tokens[8].type, TokenType.colon);
+      expect(tokens[9].type, TokenType.identifier);
+      expect(tokens[9].value, 'string');
+      expect(tokens[10].type, TokenType.rparen);
+      expect(tokens[11].type, TokenType.lbrace);
+      expect(tokens[12].type, TokenType.rbrace);
+    });
+    test('Lexer should handle function declaration with body', () {
+      final String input = 'func myFunc() { }';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+
+      expect(tokens.length, 6);
+      expect(tokens[0].type, TokenType.identifier);
+      expect(tokens[0].value, 'func');
+      expect(tokens[1].type, TokenType.identifier);
+      expect(tokens[1].value, 'myFunc');
+      expect(tokens[2].type, TokenType.lparen);
+      expect(tokens[3].type, TokenType.rparen);
+      expect(tokens[4].type, TokenType.lbrace);
+    });
   });
 }
