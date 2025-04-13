@@ -1,3 +1,4 @@
+import 'ast_name_node.dart';
 import 'ast_node.dart';
 import 'ast_function_node.dart';
 import 'ast_program_node.dart';
@@ -26,6 +27,8 @@ class Translator {
       return '${translate(node.left)} ${node.operator} ${translate(node.right)}';
     } else if (node is ASTLiteralNode) {
       return node.value.toString();
+    } else if (node is ASTNameNode) {
+      return node.id;
     } else {
       throw Exception('Unknown AST node type: ${node.runtimeType}');
     }
@@ -40,7 +43,7 @@ class Translator {
 
   String _translateContract(ASTContractNode node) {
     final methods = node.methods.map(translate).join('\n');
-    return 'abstract class ${node.name} {\n$methods\n}';
+    return 'abstract class ${node.name} {\n$methods\n}\n';
   }
 
   String _translateImplementation(ASTImplementationNode node) {
