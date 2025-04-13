@@ -1,7 +1,7 @@
 import 'ast_node.dart';
 
 class ASTReturnNode implements ASTNode {
-  final ASTNode? value;
+  final ASTNode value;
 
-  ASTReturnNode([this.value]);
+  ASTReturnNode(this.value);
 }
