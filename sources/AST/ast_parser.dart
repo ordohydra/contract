@@ -1,5 +1,6 @@
 import 'ast_node.dart';
 import 'ast_function_node.dart';
+import 'ast_parameter_node.dart';
 import 'token.dart';
 
 class ASTParser {
@@ -53,6 +54,10 @@ class ASTParser {
     final functionName = currentToken.value as String;
     consume('function name');
 
+    String? returnType;
+    List<ASTNode> body = [];
+    List<ASTParameterNode> args = [];
+
     // Check for parentheses
     expect(TokenType.lparen);
     // Check for named arguments
@@ -60,6 +65,7 @@ class ASTParser {
       if (currentToken.type != TokenType.identifier) {
         throw Exception('Expected argument name');
       }
+      final argumentName = currentToken.value as String;
       consume('argument name');
       if (currentToken.type != TokenType.colon) {
         throw Exception('Expected ":" after argument name');
@@ -68,7 +74,11 @@ class ASTParser {
       if (currentToken.type != TokenType.identifier) {
         throw Exception('Expected argument type');
       }
+      final argumentType = currentToken.value as String;
       consume('argument type');
+
+      args.add(ASTParameterNode(argumentName, argumentType));
+
       if (currentToken.type == TokenType.comma) {
         consume('comma');
       } else {
@@ -77,9 +87,6 @@ class ASTParser {
     }
 
     expect(TokenType.rparen);
-
-    String? returnType;
-    List<ASTNode> body = [];
 
     // Check for return type
     if (currentToken.type == TokenType.operator && currentToken.value == '-') {
@@ -108,6 +115,6 @@ class ASTParser {
 
     expect(TokenType.rbrace);
 
-    return ASTFunctionNode(functionName, [], body, returnType);
+    return ASTFunctionNode(functionName, args, body, returnType);
   }
 }
