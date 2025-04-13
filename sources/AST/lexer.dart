@@ -6,6 +6,7 @@ class Lexer {
   int position = 0;
   int line = 1;
   int column = 1;
+  int currentIndentationLevel = 0;
 
   Lexer(this.source);
 
@@ -17,6 +18,24 @@ class Lexer {
         if (char == '\n') {
           line++;
           column = 1;
+          position++;
+
+          // Handle indentation after a newline
+          int indentationLevel = 0;
+          while (position < source.length && source[position] == ' ') {
+            indentationLevel++;
+            position++;
+          }
+
+          if (indentationLevel > currentIndentationLevel) {
+            currentIndentationLevel = indentationLevel;
+            return Token.indentation;
+          } else if (indentationLevel < currentIndentationLevel) {
+            currentIndentationLevel = indentationLevel;
+            // Handle dedentation if needed (optional)
+          }
+
+          continue;
         } else {
           column++;
         }

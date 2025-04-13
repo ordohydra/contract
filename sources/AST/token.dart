@@ -10,6 +10,7 @@ enum TokenType {
   colon,
   assign,
   comma,
+  indentation,
   eof,
 }
 
@@ -27,6 +28,7 @@ class Token {
   static const colon = Token(TokenType.colon);
   static const assign = Token(TokenType.assign);
   static const comma = Token(TokenType.comma);
+  static const indentation = Token(TokenType.indentation);
 
   factory Token.identifier(String value) => Token(TokenType.identifier, value);
   factory Token.string(String value) => Token(TokenType.string, value);

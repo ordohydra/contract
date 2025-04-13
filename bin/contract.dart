@@ -1,57 +1,45 @@
-import 'package:args/args.dart';
-
-const String version = '0.0.1';
-
-ArgParser buildParser() {
-  return ArgParser()
-    ..addFlag(
-      'help',
-      abbr: 'h',
-      negatable: false,
-      help: 'Print this usage information.',
-    )
-    ..addFlag(
-      'verbose',
-      abbr: 'v',
-      negatable: false,
-      help: 'Show additional command output.',
-    )
-    ..addFlag('version', negatable: false, help: 'Print the tool version.');
-}
-
-void printUsage(ArgParser argParser) {
-  print('Usage: dart contract.dart <flags> [arguments]');
-  print(argParser.usage);
-}
+import 'dart:io';
+import '../sources/AST/ast_node.dart';
+import '../sources/AST/ast_parser.dart';
+import '../sources/AST/translator.dart';
+import '../sources/AST/ast_program_node.dart';
+import '../sources/AST/lexer.dart';
+import '../sources/AST/token.dart';
 
 void main(List<String> arguments) {
-  final ArgParser argParser = buildParser();
+  if (arguments.length < 2) {
+    print('Usage: dart main.dart <input_file> <output_file>');
+    exit(1);
+  }
+
+  final String inputFile = arguments[0];
+  final String outputFile = arguments[1];
+
   try {
-    final ArgResults results = argParser.parse(arguments);
-    bool verbose = false;
+    // Read the source code from the input file.
+    final String sourceCode = File(inputFile).readAsStringSync();
 
-    // Process the parsed arguments.
-    if (results.flag('help')) {
-      printUsage(argParser);
-      return;
-    }
-    if (results.flag('version')) {
-      print('contract version: $version');
-      return;
-    }
-    if (results.flag('verbose')) {
-      verbose = true;
-    }
+    // Tokenize the source code.
+    final Lexer lexer = Lexer(sourceCode);
+    final List<Token> tokens = lexer.tokenize();
 
-    // Act on the arguments provided.
-    print('Positional arguments: ${results.rest}');
-    if (verbose) {
-      print('[VERBOSE] All arguments: ${results.arguments}');
-    }
-  } on FormatException catch (e) {
-    // Print usage information if an invalid argument was provided.
-    print(e.message);
-    print('');
-    printUsage(argParser);
+    // Parse the tokens into an AST.
+    final ASTParser parser = ASTParser(tokens);
+    final List<ASTNode> declarations = parser.parse();
+
+    // Wrap the parsed nodes into an ASTProgramNode.
+    final ASTProgramNode programNode = ASTProgramNode(declarations);
+
+    // Translate the AST into Dart code.
+    final Translator translator = Translator();
+    final String dartCode = translator.translate(programNode);
+
+    // Write the translated Dart code to the output file.
+    File(outputFile).writeAsStringSync(dartCode);
+
+    print('Translation successful! Output written to $outputFile');
+  } catch (e) {
+    print('Error: $e');
+    exit(1);
   }
 }

@@ -105,15 +105,18 @@ class ASTParser {
       }
     }
 
-    // Check for function body
-    expect(TokenType.lbrace);
+    // Check for colon indicating the start of the function body
+    if (currentToken.type != TokenType.colon) {
+      throw Exception('Expected ":" after function declaration');
+    }
+    consume('colon');
 
-    while (currentToken.type != TokenType.rbrace) {
+    // Parse the function body (indented block)
+    while (currentToken.type == TokenType.indentation) {
+      consume('indentation');
       final parsedNodes = parse();
       body.addAll(parsedNodes);
     }
-
-    expect(TokenType.rbrace);
 
     return ASTFunctionNode(functionName, args, body, returnType);
   }
