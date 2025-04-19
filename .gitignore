@@ -28,3 +28,7 @@ doc/api/
 
 # VS
 .vscode/
+
+# Local files for tests
+input/
+output/
