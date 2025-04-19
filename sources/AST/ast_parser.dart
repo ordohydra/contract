@@ -1,6 +1,8 @@
+import 'ast_contract_node.dart';
 import 'ast_node.dart';
 import 'ast_function_node.dart';
 import 'ast_parameter_node.dart';
+import 'ast_implementation_node.dart';
 import 'token.dart';
 
 class ASTParser {
@@ -29,7 +31,13 @@ class ASTParser {
       if (currentToken.type == TokenType.identifier) {
         if (currentToken.value == 'func') {
           nodes.add(parseFunctionDeclaration());
+        } else if (currentToken.value == 'contract') {
+          nodes.add(parseContractDeclaration());
+        } else {
+          // throw Exception('Unexpected identifier: ${currentToken.value}');
         }
+      } else {
+        // throw Exception('Unexpected token: ${currentToken.type}');
       }
 
       break; // For now, we only handle function declarations
@@ -119,5 +127,38 @@ class ASTParser {
     }
 
     return ASTFunctionNode(functionName, args, body, returnType);
+  }
+
+  // Add parsing for ASTContractNode
+  ASTContractNode parseContractDeclaration() {
+    // Check for 'contract' keyword
+    if (currentToken.type != TokenType.identifier ||
+        currentToken.value as String != 'contract') {
+      throw Exception('Expected "contract" keyword');
+    }
+
+    consume('contract keyword');
+
+    // Check for contract name
+    if (currentToken.type != TokenType.identifier) {
+      throw Exception('Expected contract name');
+    }
+    final contractName = currentToken.value as String;
+    consume('contract name');
+
+    // Check for colon indicating the start of the contract body
+    if (currentToken.type != TokenType.colon) {
+      throw Exception('Expected ":" after contract declaration');
+    }
+    consume('colon');
+
+    // Parse the contract body (indented block)
+    List<ASTFunctionNode> methods = [];
+    while (currentToken.type == TokenType.indentation) {
+      consume('indentation');
+      methods.add(parseFunctionDeclaration());
+    }
+
+    return ASTContractNode(contractName, methods);
   }
 }

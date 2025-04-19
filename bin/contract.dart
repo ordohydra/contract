@@ -8,7 +8,7 @@ import '../sources/AST/token.dart';
 
 void main(List<String> arguments) {
   if (arguments.length < 2) {
-    print('Usage: dart main.dart <input_file> <output_file>');
+    print('Usage: dart contract.dart <input_file> <output_file>');
     exit(1);
   }
 

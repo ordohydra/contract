@@ -1,5 +1,6 @@
 import '../../sources/AST/ast_parser.dart';
 import '../../sources/AST/ast_function_node.dart';
+import '../../sources/AST/ast_contract_node.dart';
 import '../../sources/AST/lexer.dart';
 import '../../sources/AST/token.dart';
 import 'package:test/test.dart';
@@ -85,5 +86,26 @@ func myFunc(arg1: int, arg2: string):
         expect(functionNode.args.length, 2);
       },
     );
+
+    test('Test contract with function declaration', () {
+      final String input = '''
+contract MyContract:
+  func myFunc() -> int:
+    return 0
+''';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+      final ASTParser parser = ASTParser(tokens);
+      final nodes = parser.parse();
+
+      expect(nodes.length, 1);
+      expect(nodes[0].runtimeType.toString(), 'ASTContractNode');
+      final ASTContractNode contractNode = nodes[0] as ASTContractNode;
+      expect(contractNode.methods.length, 1);
+      final ASTFunctionNode functionNode = contractNode.methods[0];
+      expect(functionNode.returnType, 'int');
+      expect(functionNode.name, 'myFunc');
+      expect(functionNode.args.length, 0);
+    });
   });
 }
