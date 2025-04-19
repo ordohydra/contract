@@ -1,9 +1,7 @@
 # Contract
 General-purpose programming language.
 
-- Protocol oriented
-- No OOP
-- Strict typing
+More info (here)[https://github.com/ordohydra/Contract_Docs]
 
 ## Current stage
-Developing Contract <-> Dart compiler
+Developing Contract <-> Dart translator
