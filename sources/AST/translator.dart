@@ -1,3 +1,4 @@
+import 'ast_constructor_node.dart';
 import 'ast_name_node.dart';
 import 'ast_node.dart';
 import 'ast_function_node.dart';
@@ -46,14 +47,24 @@ class Translator {
     return 'abstract class ${node.name} {\n$methods\n}\n';
   }
 
+  String _translateConstructor(ASTConstructorNode node) {
+    final args = node.args.map((arg) => 'this.${arg.name}').join(', ');
+    final body = node.body.map(translate).join('\n');
+    return 'init($args) {\n$body\n}';
+  }
+
   String _translateImplementation(ASTImplementationNode node) {
     final fields = node.fields.map(translate).join('\n');
     final methods = node.methods.map(translate).join('\n');
+    final constructor =
+        node.constructor != null
+            ? _translateConstructor(node.constructor!)
+            : '';
     return '''
 class ${node.name} implements ${node.contractName} {
 $fields
 
-${node.constructor}
+${constructor}
 
 $methods
 }

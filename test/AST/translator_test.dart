@@ -1,5 +1,7 @@
 import 'package:test/test.dart';
 import '../../sources/AST/ast_name_node.dart';
+import '../../sources/AST/ast_constructor_node.dart';
+import '../../sources/AST/ast_parameter_node.dart';
 import '../../sources/AST/translator.dart';
 import '../../sources/AST/ast_program_node.dart';
 import '../../sources/AST/ast_function_node.dart';
@@ -47,7 +49,10 @@ void main() {
           ASTVariableNode('width', 'double', false),
           ASTVariableNode('height', 'double', false),
         ],
-        'Rectangle(this.width, this.height);',
+        ASTConstructorNode([
+          ASTParameterNode('width', 'double'),
+          ASTParameterNode('height', 'double'),
+        ], []),
         [
           ASTFunctionNode('square', [], [
             ASTReturnNode(
@@ -69,7 +74,7 @@ class Rectangle implements GeometryFigure {
 final double width;
 final double height;
 
-Rectangle(this.width, this.height);
+init(this.width, this.height) {\n\n}
 
 double square() {
 return width * height;
@@ -90,7 +95,10 @@ return width * height;
             ASTVariableNode('width', 'double', false),
             ASTVariableNode('height', 'double', false),
           ],
-          'Rectangle(this.width, this.height);',
+          ASTConstructorNode([
+            ASTParameterNode('width', 'double'),
+            ASTParameterNode('height', 'double'),
+          ], []),
           [
             ASTFunctionNode('square', [], [
               ASTReturnNode(
@@ -120,7 +128,7 @@ class Rectangle implements GeometryFigure {
 final double width;
 final double height;
 
-Rectangle(this.width, this.height);
+init(this.width, this.height) {\n\n}
 
 double square() {
 return width * height;
