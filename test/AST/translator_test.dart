@@ -46,8 +46,8 @@ void main() {
         'Rectangle',
         'GeometryFigure',
         [
-          ASTVariableNode('width', 'double', false),
-          ASTVariableNode('height', 'double', false),
+          ASTVariableNode('width', 'double'),
+          ASTVariableNode('height', 'double'),
         ],
         ASTConstructorNode([
           ASTParameterNode('width', 'double'),
@@ -71,8 +71,8 @@ void main() {
 
       expect(result, '''
 class Rectangle implements GeometryFigure {
-final double width;
-final double height;
+double width;
+double height;
 
 init(this.width, this.height) {\n\n}
 
@@ -92,8 +92,8 @@ return width * height;
           'Rectangle',
           'GeometryFigure',
           [
-            ASTVariableNode('width', 'double', false),
-            ASTVariableNode('height', 'double', false),
+            ASTVariableNode('width', 'double'),
+            ASTVariableNode('height', 'double'),
           ],
           ASTConstructorNode([
             ASTParameterNode('width', 'double'),
@@ -125,8 +125,8 @@ double square() {
 
 
 class Rectangle implements GeometryFigure {
-final double width;
-final double height;
+double width;
+double height;
 
 init(this.width, this.height) {\n\n}
 

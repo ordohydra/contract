@@ -72,7 +72,6 @@ $methods
   }
 
   String _translateVariable(ASTVariableNode node) {
-    final modifier = node.isMutable ? '' : 'final ';
-    return '$modifier${node.type} ${node.name};';
+    return '${node.type} ${node.name};';
   }
 }

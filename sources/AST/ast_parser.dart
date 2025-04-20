@@ -1,6 +1,8 @@
 import 'ast_constructor_node.dart';
 import 'ast_contract_node.dart';
+import 'ast_number_node.dart';
 import 'ast_node.dart';
+import 'ast_string_node.dart';
 import 'ast_variable_node.dart';
 import 'ast_function_node.dart';
 import 'ast_parameter_node.dart';
@@ -35,8 +37,10 @@ class ASTParser {
           nodes.add(parseFunctionDeclaration());
         } else if (currentToken.value == 'contract') {
           nodes.add(parseContractDeclaration());
+        } else if (currentToken.value == 'var') {
+          nodes.add(parseVariableDeclaration());
         } else {
-          // throw Exception('Unexpected identifier: ${currentToken.value}');
+          //throw Exception('Unexpected identifier: ${currentToken.value}');
         }
       } else {
         // throw Exception('Unexpected token: ${currentToken.type}');
@@ -282,5 +286,65 @@ class ASTParser {
     }
 
     return ASTConstructorNode(args, body);
+  }
+
+  ASTVariableNode parseVariableDeclaration() {
+    // Check for 'var' keyword
+    if (currentToken.type != TokenType.identifier ||
+        currentToken.value as String != 'var') {
+      throw Exception('Expected "var" keyword');
+    }
+    consume('var keyword');
+
+    // Check for variable name
+    if (currentToken.type != TokenType.identifier) {
+      throw Exception('Expected variable name');
+    }
+    final variableName = currentToken.value as String;
+    consume('variable name');
+
+    // Check for colon indicating the start of the variable type
+    if (currentToken.type != TokenType.colon) {
+      throw Exception('Expected ":" after variable name');
+    }
+    consume('colon');
+
+    // Check for variable type
+    if (currentToken.type != TokenType.identifier) {
+      throw Exception('Expected variable type');
+    }
+    final variableType = currentToken.value as String;
+    consume('variable type');
+
+    ASTNode? variableValue;
+    // Check for assignment operator
+    if (currentToken.type == TokenType.assign) {
+      consume('assignment operator');
+
+      // Parse the variable value and wrap it as ASTNode
+      variableValue = parseVariableValue();
+      if (variableValue == null) {
+        throw Exception('Expected variable value');
+      }
+    }
+
+    return ASTVariableNode(variableName, variableType, variableValue);
+  }
+
+  ASTNode? parseVariableValue() {
+    // Implement parsing logic for variable values
+
+    // This could be a number, string, or another ASTNode
+    if (currentToken.type == TokenType.number) {
+      final value = currentToken.value;
+      consume('number');
+      return ASTNumberNode(value);
+    } else if (currentToken.type == TokenType.string) {
+      final value = currentToken.value;
+      consume('string');
+      return ASTStringNode(value);
+    }
+
+    return null;
   }
 }

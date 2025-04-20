@@ -1,7 +1,7 @@
 import 'ast_node.dart';
 
-class ASTNumNode implements ASTNode {
+class ASTNumberNode implements ASTNode {
   final num value;
 
-  ASTNumNode(this.value);
+  ASTNumberNode(this.value);
 }

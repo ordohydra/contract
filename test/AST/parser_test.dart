@@ -1,8 +1,13 @@
+import 'dart:math';
+
+import '../../sources/AST/ast_number_node.dart';
 import '../../sources/AST/ast_parser.dart';
 import '../../sources/AST/ast_function_node.dart';
 import '../../sources/AST/ast_contract_node.dart';
+import '../../sources/AST/ast_variable_node.dart';
 import '../../sources/AST/lexer.dart';
 import '../../sources/AST/token.dart';
+import '../../sources/AST/ast_literal_node.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -17,8 +22,8 @@ func myFunc() -> int:
       final ASTParser parser = ASTParser(tokens);
       final nodes = parser.parse();
 
-      expect(nodes.length, 1);
-      expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
+      expect(nodes.length, equals(1));
+      expect(nodes[0], isA<ASTFunctionNode>());
     });
     test('Parser should handle function declaration without return type', () {
       final String input = '''
@@ -98,14 +103,33 @@ contract MyContract:
       final ASTParser parser = ASTParser(tokens);
       final nodes = parser.parse();
 
-      expect(nodes.length, 1);
-      expect(nodes[0].runtimeType.toString(), 'ASTContractNode');
+      expect(nodes.length, equals(1));
+      expect(nodes[0], isA<ASTContractNode>());
       final ASTContractNode contractNode = nodes[0] as ASTContractNode;
       expect(contractNode.methods.length, 1);
       final ASTFunctionNode functionNode = contractNode.methods[0];
       expect(functionNode.returnType, 'int');
       expect(functionNode.name, 'myFunc');
       expect(functionNode.args.length, 0);
+    });
+
+    // Test variable declaration
+    test('Parser should handle variable declaration', () {
+      final String input = '''
+var myVar: Int = 42
+''';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+      final ASTParser parser = ASTParser(tokens);
+      final nodes = parser.parse();
+      expect(nodes.length, equals(1));
+      expect(nodes[0], isA<ASTVariableNode>());
+      final ASTVariableNode variableNode = nodes[0] as ASTVariableNode;
+      expect(variableNode.name, 'myVar');
+      expect(variableNode.type, 'Int');
+      expect(variableNode.value, isA<ASTNumberNode>());
+      final ASTNumberNode numberNode = variableNode.value as ASTNumberNode;
+      expect(numberNode.value, 42);
     });
   });
 }
