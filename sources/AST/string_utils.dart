@@ -4,7 +4,7 @@ bool isDigit(String value) {
 }
 
 bool isWhitespace(String value) {
-  return value == ' ' || value == '\r' || value == '\f' || value == '\v';
+  return value.trim().isEmpty;
 }
 
 bool isLetter(String value) {

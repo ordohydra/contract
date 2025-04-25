@@ -15,37 +15,42 @@ class Lexer {
       final char = source[position];
 
       if (isWhitespace(char)) {
+        if (char == '\n') {
+          line++;
+          column = 0;
+          position++;
+
+          // Calculate the new indentation level
+          int newIndentationLevel = 0;
+          while (position < source.length &&
+              (source[position] == ' ' || source[position] == '\t')) {
+            if (source[position] == ' ') {
+              newIndentationLevel++;
+            } else if (source[position] == '\t') {
+              newIndentationLevel += 4; // Treat tab as 4 spaces
+            }
+            position++;
+          }
+
+          // Convert spaces to tab-equivalent (4 spaces = 1 tab)
+          newIndentationLevel = (newIndentationLevel / 4).floor();
+
+          // Handle indentation or dedentation
+          if (newIndentationLevel > indentationStack.last) {
+            indentationStack.add(newIndentationLevel);
+            return Token.indentation(line, column);
+          } else if (newIndentationLevel < indentationStack.last) {
+            while (indentationStack.last > newIndentationLevel) {
+              indentationStack.removeLast();
+              return Token.dedentation(line, column);
+            }
+          }
+
+          continue;
+        }
+
         position++;
         column++;
-        continue;
-      }
-
-      if (char == '\n') {
-        line++;
-        column = 0;
-        position++;
-
-        // Calculate the new indentation level
-        int newIndentationLevel = 0;
-        print(
-          "position: $position = ${source[position]}, is tab: ${source[position] == '\t'}",
-        );
-        while (position < source.length && source[position] == '\t') {
-          newIndentationLevel++;
-          position++;
-        }
-
-        // Handle indentation or dedentation
-        if (newIndentationLevel > indentationStack.last) {
-          indentationStack.add(newIndentationLevel);
-          return Token.indentation(line, column);
-        } else if (newIndentationLevel < indentationStack.last) {
-          while (indentationStack.last > newIndentationLevel) {
-            indentationStack.removeLast();
-            return Token.dedentation(line, column);
-          }
-        }
-
         continue;
       }
 

@@ -93,8 +93,8 @@ func myFunc(arg1: int, arg2: string) -> int:
     test('Test contract with function declaration', () {
       final String input = '''
 contract MyContract:
-  func myFunc() -> int:
-    return 0
+	func myFunc() -> int:
+		return 0
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -134,9 +134,9 @@ var myVar: Int = 42
     test('Parser should handle variable declaration inside a function', () {
       final String input = '''
 func myFunc():
-  var myVar: Int = 42
-  var anotherVar: String = "Hello"
-  return myVar
+	var myVar: Int = 42
+	var anotherVar: String = "Hello"
+	return myVar
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../sources/AST/lexer.dart';
 import '../../sources/AST/token.dart';
 import 'package:test/test.dart';
@@ -202,14 +204,14 @@ void main() {
     test('Lexer should handle intendation value for nested functions', () {
       final String input = '''
 func myFunc():
-  func nestedFunc():
-    print("Hello, World!")
-  return 0
+	func nestedFunc():
+		print("Hello, World!")
+	return 0
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
 
-      expect(tokens.length, 16);
+      expect(tokens.length, 20);
       expect(tokens[0].type, TokenType.identifier);
       expect(tokens[0].value, 'func');
       expect(tokens[0].currentIndentation, 0);
@@ -220,14 +222,15 @@ func myFunc():
       expect(tokens[2].type, TokenType.lparen);
       expect(tokens[3].type, TokenType.rparen);
       expect(tokens[4].type, TokenType.colon);
-      expect(tokens[5].type, TokenType.identifier);
-      expect(tokens[5].value, 'func');
-      expect(tokens[5].currentIndentation, 1);
+      expect(tokens[5].type, TokenType.indentation);
       expect(tokens[6].type, TokenType.identifier);
-      expect(tokens[6].value, 'nestedFunc');
+      expect(tokens[6].value, 'func');
       expect(tokens[6].currentIndentation, 1);
-      expect(tokens[7].type, TokenType.lparen);
-      expect(tokens[8].type, TokenType.rparen);
+      expect(tokens[7].type, TokenType.identifier);
+      expect(tokens[7].value, 'nestedFunc');
+      expect(tokens[7].currentIndentation, 1);
+      expect(tokens[8].type, TokenType.lparen);
+      expect(tokens[9].type, TokenType.rparen);
     });
   });
 }
