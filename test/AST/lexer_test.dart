@@ -197,5 +197,37 @@ void main() {
       expect(tokens[3].type, TokenType.rparen);
       expect(tokens[4].type, TokenType.lbrace);
     });
+
+    // Test intendation value for nested functions
+    test('Lexer should handle intendation value for nested functions', () {
+      final String input = '''
+func myFunc():
+  func nestedFunc():
+    print("Hello, World!")
+  return 0
+''';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+
+      expect(tokens.length, 16);
+      expect(tokens[0].type, TokenType.identifier);
+      expect(tokens[0].value, 'func');
+      expect(tokens[0].currentIndentation, 0);
+      expect(tokens[0].column, 0);
+      expect(tokens[1].type, TokenType.identifier);
+      expect(tokens[1].value, 'myFunc');
+      expect(tokens[1].currentIndentation, 0);
+      expect(tokens[2].type, TokenType.lparen);
+      expect(tokens[3].type, TokenType.rparen);
+      expect(tokens[4].type, TokenType.colon);
+      expect(tokens[5].type, TokenType.identifier);
+      expect(tokens[5].value, 'func');
+      expect(tokens[5].currentIndentation, 1);
+      expect(tokens[6].type, TokenType.identifier);
+      expect(tokens[6].value, 'nestedFunc');
+      expect(tokens[6].currentIndentation, 1);
+      expect(tokens[7].type, TokenType.lparen);
+      expect(tokens[8].type, TokenType.rparen);
+    });
   });
 }

@@ -25,7 +25,7 @@ void main(List<String> arguments) {
 
     // Parse the tokens into an AST.
     final ASTParser parser = ASTParser(tokens);
-    final List<ASTNode> declarations = parser.parse();
+    final List<ASTNode> declarations = parser.parse(0);
 
     // Wrap the parsed nodes into an ASTProgramNode.
     final ASTProgramNode programNode = ASTProgramNode(declarations);

@@ -29,10 +29,11 @@ class ASTParser {
     consume('token type ${type}');
   }
 
-  List<ASTNode> parse() {
+  List<ASTNode> parse(int column) {
     List<ASTNode> nodes = [];
     while (position < tokens.length) {
-      if (currentToken.type == TokenType.identifier) {
+      if (currentToken.type == TokenType.identifier &&
+          currentToken.column == column) {
         if (currentToken.value == 'func') {
           nodes.add(parseFunctionDeclaration());
         } else if (currentToken.value == 'contract') {
@@ -127,8 +128,11 @@ class ASTParser {
 
     // Parse the function body (indented block)
     while (currentToken.type == TokenType.indentation) {
+      final functionColumn = currentToken.column + 1;
+      print('functionColumn: $functionColumn');
+      print('currentToken.column: ${currentToken.column}');
       consume('indentation');
-      final parsedNodes = parse();
+      final parsedNodes = parse(functionColumn);
       body.addAll(parsedNodes);
     }
 
@@ -208,7 +212,7 @@ class ASTParser {
     // Parse the implementation body (indented block)
     List<ASTVariableNode> fields = [];
     List<ASTFunctionNode> methods = [];
-    ASTConstructorNode? constructor = null;
+    ASTConstructorNode? constructor;
 
     while (currentToken.type == TokenType.indentation) {
       consume('indentation');
@@ -280,8 +284,9 @@ class ASTParser {
     // Parse the constructor body (indented block)
     List<ASTNode> body = [];
     while (currentToken.type == TokenType.indentation) {
+      final column = currentToken.column + 1;
       consume('indentation');
-      final parsedNodes = parse();
+      final parsedNodes = parse(column);
       body.addAll(parsedNodes);
     }
 

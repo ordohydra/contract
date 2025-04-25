@@ -5,8 +5,8 @@ class Lexer {
   final String source;
   int position = 0;
   int line = 1;
-  int column = 1;
-  int currentIndentationLevel = 0;
+  int column = 0;
+  final List<int> indentationStack = [0]; // Tracks indentation levels
 
   Lexer(this.source);
 
@@ -15,31 +15,37 @@ class Lexer {
       final char = source[position];
 
       if (isWhitespace(char)) {
-        if (char == '\n') {
-          line++;
-          column = 1;
-          position++;
-
-          // Handle indentation after a newline
-          int indentationLevel = 0;
-          while (position < source.length && source[position] == ' ') {
-            indentationLevel++;
-            position++;
-          }
-
-          if (indentationLevel > currentIndentationLevel) {
-            currentIndentationLevel = indentationLevel;
-            return Token.indentation;
-          } else if (indentationLevel < currentIndentationLevel) {
-            currentIndentationLevel = indentationLevel;
-            // Handle dedentation if needed (optional)
-          }
-
-          continue;
-        } else {
-          column++;
-        }
         position++;
+        column++;
+        continue;
+      }
+
+      if (char == '\n') {
+        line++;
+        column = 0;
+        position++;
+
+        // Calculate the new indentation level
+        int newIndentationLevel = 0;
+        print(
+          "position: $position = ${source[position]}, is tab: ${source[position] == '\t'}",
+        );
+        while (position < source.length && source[position] == '\t') {
+          newIndentationLevel++;
+          position++;
+        }
+
+        // Handle indentation or dedentation
+        if (newIndentationLevel > indentationStack.last) {
+          indentationStack.add(newIndentationLevel);
+          return Token.indentation(line, column);
+        } else if (newIndentationLevel < indentationStack.last) {
+          while (indentationStack.last > newIndentationLevel) {
+            indentationStack.removeLast();
+            return Token.dedentation(line, column);
+          }
+        }
+
         continue;
       }
 
@@ -51,7 +57,9 @@ class Lexer {
       }
 
       if (isDigit(char) ||
-          (char == '.' && isDigit(source[position + 1]) == true)) {
+          (char == '.' &&
+              position + 1 < source.length &&
+              isDigit(source[position + 1]))) {
         int start = position;
         while (position < source.length &&
             (isDigit(source[position]) || source[position] == '.')) {
@@ -67,7 +75,12 @@ class Lexer {
         while (position < source.length && isAlphanumeric(source[position])) {
           position++;
         }
-        return Token.identifier(source.substring(start, position));
+        return Token.identifier(
+          source.substring(start, position),
+          line,
+          column,
+          indentationStack.last,
+        );
       }
 
       if (char == '"') {
@@ -122,6 +135,13 @@ class Lexer {
           );
       }
     }
+
+    // Handle remaining dedentations at the end of the file
+    if (indentationStack.length > 1) {
+      indentationStack.removeLast();
+      return Token.dedentation(line, column);
+    }
+
     return Token.eof;
   }
 
