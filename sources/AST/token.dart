@@ -48,8 +48,8 @@ class Token {
   factory Token.string(String value) => Token(TokenType.string, value);
   factory Token.number(num value) => Token(TokenType.number, value);
   factory Token.operator(String value) => Token(TokenType.operator, value);
-  factory Token.indentation(int line, int column) =>
-      Token(TokenType.indentation, line, column);
-  factory Token.dedentation(int line, int column) =>
-      Token(TokenType.dedentation, line, column);
+  factory Token.indentation(int line, int column, int currentIndentation) =>
+      Token(TokenType.indentation, -1, line, column, currentIndentation);
+  factory Token.dedentation(int line, int column, int currentIndentation) =>
+      Token(TokenType.dedentation, -1, line, column, currentIndentation);
 }

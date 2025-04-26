@@ -38,11 +38,11 @@ class Lexer {
           // Handle indentation or dedentation
           if (newIndentationLevel > indentationStack.last) {
             indentationStack.add(newIndentationLevel);
-            return Token.indentation(line, column);
+            return Token.indentation(line, column, newIndentationLevel);
           } else if (newIndentationLevel < indentationStack.last) {
             while (indentationStack.last > newIndentationLevel) {
               indentationStack.removeLast();
-              return Token.dedentation(line, column);
+              return Token.dedentation(line, column, newIndentationLevel);
             }
           }
 
@@ -144,7 +144,7 @@ class Lexer {
     // Handle remaining dedentations at the end of the file
     if (indentationStack.length > 1) {
       indentationStack.removeLast();
-      return Token.dedentation(line, column);
+      return Token.dedentation(line, column, indentationStack.last);
     }
 
     return Token.eof;

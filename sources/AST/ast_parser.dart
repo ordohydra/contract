@@ -6,6 +6,7 @@ import 'ast_string_node.dart';
 import 'ast_variable_node.dart';
 import 'ast_function_node.dart';
 import 'ast_parameter_node.dart';
+import 'ast_return_node.dart';
 import 'ast_implementation_node.dart';
 import 'token.dart';
 
@@ -29,25 +30,32 @@ class ASTParser {
     consume('token type ${type}');
   }
 
-  List<ASTNode> parse(int column) {
+  List<ASTNode> parse(int intendation) {
     List<ASTNode> nodes = [];
     while (position < tokens.length) {
       if (currentToken.type == TokenType.identifier &&
-          currentToken.column == column) {
+          currentToken.currentIndentation == intendation) {
         if (currentToken.value == 'func') {
           nodes.add(parseFunctionDeclaration());
         } else if (currentToken.value == 'contract') {
           nodes.add(parseContractDeclaration());
         } else if (currentToken.value == 'var') {
           nodes.add(parseVariableDeclaration());
+        } else if (currentToken.value == 'return') {
+          nodes.add(parseReturnNode());
+        } else if (currentToken.type == TokenType.indentation) {
+          consume('indentation');
+        } else if (currentToken.type == TokenType.dedentation) {
+          consume('dedentation');
+          break;
         } else {
+          break;
           //throw Exception('Unexpected identifier: ${currentToken.value}');
         }
       } else {
+        break;
         // throw Exception('Unexpected token: ${currentToken.type}');
       }
-
-      break; // For now, we only handle function declarations
     }
 
     return nodes;
@@ -128,11 +136,13 @@ class ASTParser {
 
     // Parse the function body (indented block)
     while (currentToken.type == TokenType.indentation) {
-      final functionColumn = currentToken.column + 1;
-      print('functionColumn: $functionColumn');
-      print('currentToken.column: ${currentToken.column}');
+      final functionIndentation = currentToken.currentIndentation;
+      print('functionIdnentation: $functionIndentation');
+      print(
+        'currentToken.currentIndentation: ${currentToken.currentIndentation}',
+      );
       consume('indentation');
-      final parsedNodes = parse(functionColumn);
+      final parsedNodes = parse(functionIndentation);
       body.addAll(parsedNodes);
     }
 
@@ -351,5 +361,33 @@ class ASTParser {
     }
 
     return null;
+  }
+
+  ASTReturnNode parseReturnNode() {
+    // Check for 'return' keyword
+    if (currentToken.type != TokenType.identifier ||
+        currentToken.value as String != 'return') {
+      throw Exception('Expected "return" keyword');
+    }
+
+    consume('return keyword');
+
+    // Parse the return value
+    ASTNode? returnValue;
+    if (currentToken.type == TokenType.number) {
+      final value = currentToken.value;
+      consume('number');
+      returnValue = ASTNumberNode(value);
+    } else if (currentToken.type == TokenType.string) {
+      final value = currentToken.value;
+      consume('string');
+      returnValue = ASTStringNode(value);
+    }
+
+    if (returnValue == null) {
+      throw Exception('Expected return value');
+    }
+
+    return ASTReturnNode(returnValue);
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import '../../sources/AST/lexer.dart';
 import '../../sources/AST/token.dart';
 import 'package:test/test.dart';
@@ -223,6 +221,7 @@ func myFunc():
       expect(tokens[3].type, TokenType.rparen);
       expect(tokens[4].type, TokenType.colon);
       expect(tokens[5].type, TokenType.indentation);
+      expect(tokens[5].currentIndentation, 1);
       expect(tokens[6].type, TokenType.identifier);
       expect(tokens[6].value, 'func');
       expect(tokens[6].currentIndentation, 1);

@@ -13,7 +13,7 @@ void main() {
     test('Parser should handle function declaration', () {
       final String input = '''
 func myFunc() -> int:
-  return 0
+	return 0
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -39,9 +39,9 @@ func myFunc():
     test('Parser should handle function declaration with body', () {
       final String input = '''
 func myFunc() -> int:
-  func otherFunc():
-    print("Hello, World!")
-  return 0
+	func otherFunc():
+		print("Hello, World!")
+	return 0
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -81,7 +81,7 @@ func myFunc(arg1: int, arg2: string) -> int:
         final ASTParser parser = ASTParser(tokens);
         final nodes = parser.parse(0);
 
-        expect(nodes.length, 1);
+        expect(nodes.length, 2);
         expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
         final ASTFunctionNode functionNode = nodes[0] as ASTFunctionNode;
         expect(functionNode.returnType, 'int');
