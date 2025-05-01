@@ -155,7 +155,7 @@ func myFunc():
     // Test variable declarations inside a contract
     test('Parser should handle variable declaration inside a contract', () {
       final String input = '''
-implementation MyImplementation of MyInterface:
+impl MyImplementation of MyInterface:
     var myVar: Int = 42
     func myFunc():
         return myVar

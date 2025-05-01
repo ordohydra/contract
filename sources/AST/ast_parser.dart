@@ -8,7 +8,6 @@ import 'ast_function_node.dart';
 import 'ast_parameter_node.dart';
 import 'ast_return_node.dart';
 import 'ast_implementation_node.dart';
-import 'ast_binary_expression_node.dart';
 import 'ast_name_node.dart';
 import 'token.dart';
 
@@ -46,7 +45,7 @@ class ASTParser {
           nodes.add(parseVariableDeclaration());
         } else if (currentToken.value == 'return') {
           nodes.add(parseReturnNode());
-        } else if (currentToken.value == 'implementation') {
+        } else if (currentToken.value == 'impl') {
           nodes.add(parseImplementationDeclaration());
         } else {
           break;
@@ -193,11 +192,11 @@ class ASTParser {
   ASTImplementationNode parseImplementationDeclaration() {
     // Check for 'implementation' keyword
     if (currentToken.type != TokenType.identifier ||
-        currentToken.value as String != 'implementation') {
-      throw Exception('Expected "implementation" keyword');
+        currentToken.value as String != 'impl') {
+      throw Exception('Expected "impl" keyword');
     }
 
-    consume('implementation keyword');
+    consume('impl keyword');
 
     // Check for implementation name
     if (currentToken.type != TokenType.identifier) {
