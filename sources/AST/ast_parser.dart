@@ -8,6 +8,8 @@ import 'ast_function_node.dart';
 import 'ast_parameter_node.dart';
 import 'ast_return_node.dart';
 import 'ast_implementation_node.dart';
+import 'ast_binary_expression_node.dart';
+import 'ast_name_node.dart';
 import 'token.dart';
 
 class ASTParser {
@@ -33,6 +35,7 @@ class ASTParser {
   List<ASTNode> parse(int intendation) {
     List<ASTNode> nodes = [];
     while (position < tokens.length) {
+      // Identifier
       if (currentToken.type == TokenType.identifier &&
           currentToken.currentIndentation == intendation) {
         if (currentToken.value == 'func') {
@@ -43,15 +46,18 @@ class ASTParser {
           nodes.add(parseVariableDeclaration());
         } else if (currentToken.value == 'return') {
           nodes.add(parseReturnNode());
-        } else if (currentToken.type == TokenType.indentation) {
-          consume('indentation');
-        } else if (currentToken.type == TokenType.dedentation) {
-          consume('dedentation');
-          break;
+        } else if (currentToken.value == 'implementation') {
+          nodes.add(parseImplementationDeclaration());
         } else {
           break;
           //throw Exception('Unexpected identifier: ${currentToken.value}');
         }
+        // Another token types
+      } else if (currentToken.type == TokenType.indentation) {
+        consume('indentation');
+      } else if (currentToken.type == TokenType.dedentation) {
+        consume('dedentation');
+        break;
       } else {
         break;
         // throw Exception('Unexpected token: ${currentToken.type}');
@@ -135,7 +141,8 @@ class ASTParser {
     consume('colon');
 
     // Parse the function body (indented block)
-    while (currentToken.type == TokenType.indentation) {
+    while (position < tokens.length &&
+        currentToken.type == TokenType.indentation) {
       final functionIndentation = currentToken.currentIndentation;
       print('functionIdnentation: $functionIndentation');
       print(
@@ -224,13 +231,27 @@ class ASTParser {
     List<ASTFunctionNode> methods = [];
     ASTConstructorNode? constructor;
 
-    while (currentToken.type == TokenType.indentation) {
-      consume('indentation');
+    // Check for indentation
+    if (currentToken.type != TokenType.indentation) {
+      throw Exception('Expected indentation after implementation declaration');
+    }
+    consume('indentation');
+
+    while (currentToken.type == TokenType.identifier) {
       if (currentToken.type == TokenType.identifier &&
           currentToken.value as String == 'init') {
         constructor = parseConstructor();
       } else {
-        methods.add(parseFunctionDeclaration());
+        // Parse variable declarations
+        if (currentToken.type == TokenType.identifier &&
+            currentToken.value as String == 'var') {
+          fields.add(parseVariableDeclaration());
+        } else if (currentToken.type == TokenType.identifier &&
+            currentToken.value as String == 'func') {
+          methods.add(parseFunctionDeclaration());
+        } else {
+          throw Exception('Expected "var" or "func" keyword');
+        }
       }
     }
 
@@ -382,6 +403,10 @@ class ASTParser {
       final value = currentToken.value;
       consume('string');
       returnValue = ASTStringNode(value);
+    } else if (currentToken.type == TokenType.identifier) {
+      final value = currentToken.value;
+      consume('identifier');
+      returnValue = ASTNameNode(value);
     }
 
     if (returnValue == null) {

@@ -1,3 +1,4 @@
+import '../../sources/AST/ast_implementation_node.dart';
 import '../../sources/AST/ast_number_node.dart';
 import '../../sources/AST/ast_parser.dart';
 import '../../sources/AST/ast_function_node.dart';
@@ -81,7 +82,7 @@ func myFunc(arg1: int, arg2: string) -> int:
         final ASTParser parser = ASTParser(tokens);
         final nodes = parser.parse(0);
 
-        expect(nodes.length, 2);
+        expect(nodes.length, 3);
         expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
         final ASTFunctionNode functionNode = nodes[0] as ASTFunctionNode;
         expect(functionNode.returnType, 'int');
@@ -154,10 +155,10 @@ func myFunc():
     // Test variable declarations inside a contract
     test('Parser should handle variable declaration inside a contract', () {
       final String input = '''
-contract MyContract:
-  var myVar: Int = 42
-  func myFunc():
-    return myVar
+implementation MyImplementation of MyInterface:
+    var myVar: Int = 42
+    func myFunc():
+        return myVar
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -165,10 +166,12 @@ contract MyContract:
       final nodes = parser.parse(0);
 
       expect(nodes.length, equals(1));
-      expect(nodes[0], isA<ASTContractNode>());
-      final ASTContractNode contractNode = nodes[0] as ASTContractNode;
-      expect(contractNode.methods.length, 1);
-      expect(contractNode.methods[0], isA<ASTFunctionNode>());
+      expect(nodes[0], isA<ASTImplementationNode>());
+      final ASTImplementationNode implementationNode =
+          nodes[0] as ASTImplementationNode;
+      expect(implementationNode.fields.length, 1);
+      expect(implementationNode.methods.length, 1);
+      expect(implementationNode.methods[0], isA<ASTFunctionNode>());
     });
   });
 }
