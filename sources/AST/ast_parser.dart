@@ -48,7 +48,9 @@ class ASTParser {
         } else if (currentToken.value == 'impl') {
           nodes.add(parseImplementationDeclaration());
         } else {
-          break;
+          nodes.add(ASTNameNode(currentToken.value));
+          consume("name");
+          //break;
           //throw Exception('Unexpected identifier: ${currentToken.value}');
         }
         // Another token types
@@ -57,6 +59,25 @@ class ASTParser {
       } else if (currentToken.type == TokenType.dedentation) {
         consume('dedentation');
         break;
+      } else if (currentToken.type == TokenType.eof) {
+        break;
+      } else if (currentToken.type == TokenType.number) {
+        nodes.add(ASTNumberNode(currentToken.value));
+        consume('number');
+      } else if (currentToken.type == TokenType.string) {
+        nodes.add(ASTStringNode(currentToken.value));
+        consume('string');
+      } else if (currentToken.type == TokenType.operator) {
+        // Handle operators if needed
+        consume('operator');
+      } else if (currentToken.type == TokenType.lparen) {
+        consume('lparen');
+      } else if (currentToken.type == TokenType.rparen) {
+        consume('rparen');
+      } else if (currentToken.type == TokenType.lbrace) {
+        consume('lbrace');
+      } else if (currentToken.type == TokenType.rbrace) {
+        consume('rbrace');
       } else {
         break;
         // throw Exception('Unexpected token: ${currentToken.type}');
@@ -143,10 +164,6 @@ class ASTParser {
     while (position < tokens.length &&
         currentToken.type == TokenType.indentation) {
       final functionIndentation = currentToken.currentIndentation;
-      print('functionIdnentation: $functionIndentation');
-      print(
-        'currentToken.currentIndentation: ${currentToken.currentIndentation}',
-      );
       consume('indentation');
       final parsedNodes = parse(functionIndentation);
       body.addAll(parsedNodes);

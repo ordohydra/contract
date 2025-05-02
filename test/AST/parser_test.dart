@@ -26,8 +26,8 @@ func myFunc() -> int:
     });
     test('Parser should handle function declaration without return type', () {
       final String input = '''
-func myFunc():
-  print("Hello, World!")
+func main():
+    print("Hello world")
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -36,6 +36,13 @@ func myFunc():
 
       expect(nodes.length, 1);
       expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
+
+      final ASTFunctionNode functionNode = nodes[0] as ASTFunctionNode;
+      expect(functionNode.returnType, isNull);
+      expect(functionNode.name, 'main');
+      expect(functionNode.args.length, 0);
+      expect(functionNode.body.length, 2);
+      expect(functionNode.body[0].runtimeType.toString(), 'ASTNameNode');
     });
     test('Parser should handle function declaration with body', () {
       final String input = '''
@@ -55,7 +62,7 @@ func myFunc() -> int:
     test('Parser should handle function declaration with arguments', () {
       final String input = '''
 func myFunc(arg1: int, arg2: string):
-  print(arg1)
+    print(arg1)
 ''';
       final Lexer lexer = Lexer(input);
       final List<Token> tokens = lexer.tokenize();
@@ -71,23 +78,27 @@ func myFunc(arg1: int, arg2: string):
       () {
         final String input = '''
 func myFunc(arg1: int, arg2: string) -> int:
-  func innerFunc1() -> string:
-    return "Hello"
-  func innerFunc2(arg: float):
-    print(arg)
-  return 42
+    func innerFunc1() -> string:
+        return "Hello"
+    func innerFunc2(arg: float):
+        print(arg)
+    return 42
       ''';
         final Lexer lexer = Lexer(input);
         final List<Token> tokens = lexer.tokenize();
         final ASTParser parser = ASTParser(tokens);
         final nodes = parser.parse(0);
 
-        expect(nodes.length, 3);
+        expect(nodes.length, 1);
         expect(nodes[0].runtimeType.toString(), 'ASTFunctionNode');
         final ASTFunctionNode functionNode = nodes[0] as ASTFunctionNode;
         expect(functionNode.returnType, 'int');
         expect(functionNode.name, 'myFunc');
         expect(functionNode.args.length, 2);
+        expect(functionNode.body.length, 3);
+        expect(functionNode.body[0].runtimeType.toString(), 'ASTFunctionNode');
+        expect(functionNode.body[1].runtimeType.toString(), 'ASTFunctionNode');
+        expect(functionNode.body[2].runtimeType.toString(), 'ASTReturnNode');
       },
     );
 
