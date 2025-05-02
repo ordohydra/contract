@@ -372,22 +372,20 @@ class ASTParser {
     final variableType = currentToken.value as String;
     consume('variable type');
 
-    ASTNode? variableValue;
     // Check for assignment operator
     if (currentToken.type == TokenType.assign) {
       consume('assignment operator');
 
       // Parse the variable value and wrap it as ASTNode
-      variableValue = parseVariableValue();
-      if (variableValue == null) {
-        throw Exception('Expected variable value');
-      }
+      ASTNode variableValue = parseVariableValue();
+
+      return ASTVariableNode(variableName, variableType, variableValue);
     }
 
-    return ASTVariableNode(variableName, variableType, variableValue);
+    throw Exception('Expected assignment operator');
   }
 
-  ASTNode? parseVariableValue() {
+  ASTNode parseVariableValue() {
     // Implement parsing logic for variable values
 
     // This could be a number, string, or another ASTNode
@@ -412,7 +410,7 @@ class ASTParser {
       }
     }
 
-    return null;
+    throw Exception('Expected variable value');
   }
 
   ASTReturnNode parseReturnNode() {

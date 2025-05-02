@@ -2,6 +2,7 @@ import 'ast_constructor_node.dart';
 import 'ast_name_node.dart';
 import 'ast_node.dart';
 import 'ast_function_node.dart';
+import 'ast_number_node.dart';
 import 'ast_program_node.dart';
 import 'ast_literal_node.dart';
 import 'ast_contract_node.dart';
@@ -37,6 +38,8 @@ class Translator {
     } else if (node is ASTCallNode) {
       final args = node.arguments.map(translate).join(', ');
       return '${node.functionName}($args);';
+    } else if (node is ASTNumberNode) {
+      return node.value.toString();
     } else {
       throw Exception('Unknown AST node type: ${node.runtimeType}');
     }
@@ -79,6 +82,21 @@ $methods
   }
 
   String _translateVariable(ASTVariableNode node) {
-    return '${node.type} ${node.name};';
+    return '${_translateType(node.type)} ${node.name} = ${translate(node.value)};';
+  }
+
+  String _translateType(String type) {
+    switch (type) {
+      case 'Int':
+        return 'int';
+      case 'Double':
+        return 'double';
+      case 'String':
+        return 'string';
+      case 'Bool':
+        return 'bool';
+      default:
+        return type;
+    }
   }
 }
