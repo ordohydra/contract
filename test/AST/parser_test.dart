@@ -191,5 +191,39 @@ impl MyImplementation of MyInterface:
       expect(implementationNode.methods.length, 1);
       expect(implementationNode.methods[0], isA<ASTFunctionNode>());
     });
+
+    test("Test complex program", () {
+      final String input = '''
+var a: Int = 1
+var b: Int = 2
+
+func main():
+	var result: Int = a + b
+	print("Result:")
+	print(result)
+''';
+      final Lexer lexer = Lexer(input);
+      final List<Token> tokens = lexer.tokenize();
+      final ASTParser parser = ASTParser(tokens);
+      final nodes = parser.parse(0);
+
+      expect(nodes.length, 3);
+      expect(nodes[0], isA<ASTVariableNode>());
+      expect(nodes[1], isA<ASTVariableNode>());
+      expect(nodes[2], isA<ASTFunctionNode>());
+      final ASTVariableNode variableNode = nodes[0] as ASTVariableNode;
+      expect(variableNode.name, 'a');
+      expect(variableNode.type, 'Int');
+      expect(variableNode.value, isA<ASTNumberNode>());
+      final ASTNumberNode numberNode = variableNode.value as ASTNumberNode;
+      expect(numberNode.value, 1);
+      final ASTFunctionNode functionNode = nodes[2] as ASTFunctionNode;
+      expect(functionNode.name, 'main');
+      expect(functionNode.args.length, 0);
+      expect(functionNode.body.length, 3);
+      expect(functionNode.body[0], isA<ASTVariableNode>());
+      expect(functionNode.body[1], isA<ASTCallNode>());
+      expect(functionNode.body[2], isA<ASTCallNode>());
+    });
   });
 }

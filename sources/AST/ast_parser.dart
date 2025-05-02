@@ -399,6 +399,17 @@ class ASTParser {
       final value = currentToken.value;
       consume('string');
       return ASTStringNode(value);
+    } else if (currentToken.type == TokenType.identifier) {
+      final value = currentToken.value;
+      consume('identifier');
+      // check for binanry expression or function call
+      if (currentToken.type == TokenType.operator) {
+        return parseBinaryExpression(ASTNameNode(value));
+      } else if (currentToken.type == TokenType.lparen) {
+        return parseCallNode(ASTNameNode(value));
+      } else {
+        return ASTNameNode(value);
+      }
     }
 
     return null;
