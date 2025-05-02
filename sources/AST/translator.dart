@@ -39,7 +39,7 @@ class Translator {
       final args = node.arguments.map(translate).join(', ');
       return '${node.functionName}($args);';
     } else if (node is ASTNumberNode) {
-      return node.value.toString();
+      return node.asString();
     } else {
       throw Exception('Unknown AST node type: ${node.runtimeType}');
     }
