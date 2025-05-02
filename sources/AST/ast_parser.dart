@@ -1,3 +1,5 @@
+import 'ast_binary_expression_node.dart';
+import 'ast_call_node.dart';
 import 'ast_constructor_node.dart';
 import 'ast_contract_node.dart';
 import 'ast_number_node.dart';
@@ -31,12 +33,12 @@ class ASTParser {
     consume('token type ${type}');
   }
 
-  List<ASTNode> parse(int intendation) {
+  List<ASTNode> parse(int indentation) {
     List<ASTNode> nodes = [];
     while (position < tokens.length) {
       // Identifier
       if (currentToken.type == TokenType.identifier &&
-          currentToken.currentIndentation == intendation) {
+          currentToken.currentIndentation == indentation) {
         if (currentToken.value == 'func') {
           nodes.add(parseFunctionDeclaration());
         } else if (currentToken.value == 'contract') {
@@ -48,12 +50,32 @@ class ASTParser {
         } else if (currentToken.value == 'impl') {
           nodes.add(parseImplementationDeclaration());
         } else {
-          nodes.add(ASTNameNode(currentToken.value));
-          consume("name");
-          //break;
-          //throw Exception('Unexpected identifier: ${currentToken.value}');
+          // Check if it's a function call
+          final functionName = ASTNameNode(currentToken.value);
+          consume('function name');
+          if (currentToken.type == TokenType.lparen) {
+            nodes.add(parseCallNode(functionName));
+          } else {
+            nodes.add(functionName);
+          }
         }
-        // Another token types
+      } else if (currentToken.type == TokenType.number ||
+          currentToken.type == TokenType.string) {
+        // Handle binary expressions
+        ASTNode leftOperand;
+        if (currentToken.type == TokenType.number) {
+          leftOperand = ASTNumberNode(currentToken.value);
+          consume('number');
+        } else {
+          leftOperand = ASTStringNode(currentToken.value);
+          consume('string');
+        }
+
+        if (currentToken.type == TokenType.operator) {
+          nodes.add(parseBinaryExpression(leftOperand));
+        } else {
+          nodes.add(leftOperand);
+        }
       } else if (currentToken.type == TokenType.indentation) {
         consume('indentation');
       } else if (currentToken.type == TokenType.dedentation) {
@@ -61,26 +83,8 @@ class ASTParser {
         break;
       } else if (currentToken.type == TokenType.eof) {
         break;
-      } else if (currentToken.type == TokenType.number) {
-        nodes.add(ASTNumberNode(currentToken.value));
-        consume('number');
-      } else if (currentToken.type == TokenType.string) {
-        nodes.add(ASTStringNode(currentToken.value));
-        consume('string');
-      } else if (currentToken.type == TokenType.operator) {
-        // Handle operators if needed
-        consume('operator');
-      } else if (currentToken.type == TokenType.lparen) {
-        consume('lparen');
-      } else if (currentToken.type == TokenType.rparen) {
-        consume('rparen');
-      } else if (currentToken.type == TokenType.lbrace) {
-        consume('lbrace');
-      } else if (currentToken.type == TokenType.rbrace) {
-        consume('rbrace');
       } else {
-        break;
-        // throw Exception('Unexpected token: ${currentToken.type}');
+        throw Exception('Unexpected token: ${currentToken.type}');
       }
     }
 
@@ -430,5 +434,60 @@ class ASTParser {
     }
 
     return ASTReturnNode(returnValue);
+  }
+
+  ASTCallNode parseCallNode(ASTNameNode functionName) {
+    // Check for parentheses
+    expect(TokenType.lparen);
+
+    // Parse arguments
+    List<ASTNode> args = [];
+    while (currentToken.type != TokenType.rparen) {
+      if (currentToken.type == TokenType.number) {
+        args.add(ASTNumberNode(currentToken.value));
+        consume('number');
+      } else if (currentToken.type == TokenType.string) {
+        args.add(ASTStringNode(currentToken.value));
+        consume('string');
+      } else if (currentToken.type == TokenType.identifier) {
+        args.add(ASTNameNode(currentToken.value));
+        consume('identifier');
+      }
+
+      if (currentToken.type == TokenType.comma) {
+        consume('comma');
+      } else {
+        break;
+      }
+    }
+
+    expect(TokenType.rparen);
+
+    return ASTCallNode(functionName.id, args);
+  }
+
+  ASTBinaryExpressionNode parseBinaryExpression(ASTNode leftOperand) {
+    // Check for operator
+    if (currentToken.type != TokenType.operator) {
+      throw Exception('Expected operator');
+    }
+    final operator = currentToken.value as String;
+    consume('operator');
+    // Parse the right operand
+    ASTNode? rightOperand;
+    if (currentToken.type == TokenType.number) {
+      rightOperand = ASTNumberNode(currentToken.value);
+      consume('number');
+    } else if (currentToken.type == TokenType.string) {
+      rightOperand = ASTStringNode(currentToken.value);
+      consume('string');
+    } else if (currentToken.type == TokenType.identifier) {
+      rightOperand = ASTNameNode(currentToken.value);
+      consume('identifier');
+    }
+    if (rightOperand == null) {
+      throw Exception('Expected right operand');
+    }
+    return ASTBinaryExpressionNode(leftOperand, operator, rightOperand);
   }
 }

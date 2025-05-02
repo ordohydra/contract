@@ -11,6 +11,7 @@ import '../../sources/AST/ast_variable_node.dart';
 import '../../sources/AST/ast_literal_node.dart';
 import '../../sources/AST/ast_return_node.dart';
 import '../../sources/AST/ast_binary_expression_node.dart';
+import '../../sources/AST/ast_string_node.dart';
 
 void main() {
   group('Translator Tests', () {

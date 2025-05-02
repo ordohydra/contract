@@ -7,6 +7,8 @@ import '../../sources/AST/ast_variable_node.dart';
 import '../../sources/AST/lexer.dart';
 import '../../sources/AST/token.dart';
 import '../../sources/AST/ast_return_node.dart';
+import '../../sources/AST/ast_call_node.dart';
+import '../../sources/AST/ast_string_node.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -41,8 +43,13 @@ func main():
       expect(functionNode.returnType, isNull);
       expect(functionNode.name, 'main');
       expect(functionNode.args.length, 0);
-      expect(functionNode.body.length, 2);
-      expect(functionNode.body[0].runtimeType.toString(), 'ASTNameNode');
+      expect(functionNode.body.length, 1);
+      expect(functionNode.body[0].runtimeType.toString(), 'ASTCallNode');
+      ASTCallNode callNode = functionNode.body[0] as ASTCallNode;
+      expect(callNode.functionName, 'print');
+      expect(callNode.arguments.length, 1);
+      expect(callNode.arguments[0].runtimeType.toString(), 'ASTStringNode');
+      expect((callNode.arguments[0] as ASTStringNode).value, 'Hello world');
     });
     test('Parser should handle function declaration with body', () {
       final String input = '''
