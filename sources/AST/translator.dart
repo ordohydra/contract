@@ -10,6 +10,7 @@ import 'ast_string_node.dart';
 import 'ast_variable_node.dart';
 import 'ast_return_node.dart';
 import 'ast_binary_expression_node.dart';
+import 'ast_call_node.dart';
 
 class Translator {
   String translate(ASTNode node) {
@@ -33,6 +34,9 @@ class Translator {
       return node.id;
     } else if (node is ASTStringNode) {
       return '"${node.value}"';
+    } else if (node is ASTCallNode) {
+      final args = node.arguments.map(translate).join(', ');
+      return '${node.functionName}($args);';
     } else {
       throw Exception('Unknown AST node type: ${node.runtimeType}');
     }

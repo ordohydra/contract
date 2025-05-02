@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import '../../sources/AST/ast_call_node.dart';
 import '../../sources/AST/ast_name_node.dart';
 import '../../sources/AST/ast_constructor_node.dart';
 import '../../sources/AST/ast_parameter_node.dart';
@@ -135,6 +136,24 @@ double square() {
 return width * height;
 }
 }\n''');
+    });
+
+    // Test trivial program that prints "Hello, World!"
+    test('Translate a trivial program', () {
+      final programNode = ASTProgramNode([
+        ASTFunctionNode('main', [], [
+          //ASTReturnNode(ASTStringNode('Hello, World!')),
+          ASTCallNode('print', [ASTStringNode('Hello, World!')]),
+        ], null),
+      ]);
+
+      final translator = Translator();
+      final result = translator.translate(programNode);
+
+      expect(result, '''
+void main() {
+print("Hello, World!");
+}''');
     });
   });
 }
